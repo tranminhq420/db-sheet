@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3
+credentials.json
+sheet-db-511904-c386b5ac8b09.json
+.env
+config.js
+dist/

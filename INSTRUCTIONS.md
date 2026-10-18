@@ -1,0 +1,1 @@
+Rebuild with just javascript and query the api directly so it removes the need for the backend and can be hosted on github.
