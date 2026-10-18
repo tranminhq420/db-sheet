@@ -1,0 +1,12 @@
+{
+  "name": "sheet-image-lookup",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "secret:put": "wrangler secret put GOOGLE_SERVICE_ACCOUNT_JSON"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7fb">
+  <title>Picture lookup</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="lookup-card">
+    <p class="eyebrow">SHEET IMAGE LOOKUP</p>
+    <h1>Find your picture</h1>
+    <p class="intro">Enter your key to retrieve its associated picture.</p>
+
+    <form id="lookup-form">
+      <label for="key">Lookup key</label>
+      <div class="search-row">
+        <input id="key" name="key" type="text" autocomplete="off"
+               placeholder="Enter your key" required>
+        <button id="submit-button" type="submit">Search</button>
+      </div>
+    </form>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <section id="result" class="result" aria-label="Picture result" hidden>
+      <img id="picture" alt="Picture associated with the entered key">
+      <a id="picture-link" target="_blank" rel="noopener noreferrer">Open picture</a>
+    </section>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

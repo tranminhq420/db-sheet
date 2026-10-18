@@ -1,9 +1,12 @@
 .venv/
+node_modules/
+.wrangler/
 __pycache__/
 *.py[cod]
 db.sqlite3
 credentials.json
 sheet-db-511904-c386b5ac8b09.json
 .env
+.dev.vars
 config.js
 dist/

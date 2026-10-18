@@ -11,20 +11,6 @@ function showError(message) {
   statusMessage.classList.add("error");
 }
 
-function getLookupConfig() {
-  const config = window.SHEET_LOOKUP_CONFIG;
-  if (
-    !config ||
-    !config.apiKey ||
-    config.apiKey === "YOUR_RESTRICTED_GOOGLE_SHEETS_API_KEY" ||
-    !config.spreadsheetId ||
-    config.spreadsheetId === "YOUR_PUBLIC_SPREADSHEET_ID"
-  ) {
-    throw new Error("Set your Sheets API key and spreadsheet ID in config.js.");
-  }
-  return config;
-}
-
 function isWebUrl(value) {
   try {
     const url = new URL(value);
@@ -48,33 +34,6 @@ function getImageDisplayUrl(value) {
   return url.href;
 }
 
-async function findPictureUrl(key, config) {
-  const worksheet = (config.worksheet || "Sheet1").replaceAll("'", "''");
-  const range = encodeURIComponent(`'${worksheet}'!A:B`);
-  const endpoint = new URL(
-    `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(
-      config.spreadsheetId
-    )}/values/${range}`
-  );
-  endpoint.searchParams.set("key", config.apiKey);
-
-  const response = await fetch(endpoint);
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(
-      response.status === 403
-        ? "Google Sheets access failed. Check that the sheet is public and the API key is configured correctly."
-        : "The lookup could not be completed. Please try again later."
-    );
-  }
-
-  const rows = Array.isArray(data.values) ? data.values : [];
-  const row = rows.find(
-    (cells) => Array.isArray(cells) && String(cells[0] ?? "").trim() === key
-  );
-  return row && row.length > 1 ? String(row[1]).trim() : null;
-}
-
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   result.hidden = true;
@@ -83,31 +42,34 @@ form.addEventListener("submit", async (event) => {
   submitButton.disabled = true;
 
   try {
-    const config = getLookupConfig();
-    const key = keyInput.value.trim();
-    const imageUrl = await findPictureUrl(key, config);
+    const response = await fetch("/api/lookup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: keyInput.value.trim() }),
+    });
+    const data = await response.json();
 
-    if (!imageUrl) {
-      throw new Error("No picture was found for that key.");
+    if (!response.ok) {
+      throw new Error(data.error || "The lookup could not be completed.");
     }
-    if (!isWebUrl(imageUrl)) {
+    if (!isWebUrl(data.image_url)) {
       throw new Error("The picture URL in the sheet is invalid.");
     }
 
-    const displayUrl = getImageDisplayUrl(imageUrl);
+    const displayUrl = getImageDisplayUrl(data.image_url);
     picture.onerror = () => {
       result.hidden = true;
       showError("The picture could not be loaded. Check its sharing settings.");
     };
     picture.src = displayUrl;
     picture.referrerPolicy = "no-referrer";
-    pictureLink.href = imageUrl;
+    pictureLink.href = data.image_url;
     result.hidden = false;
     statusMessage.textContent = "Picture found.";
   } catch (error) {
     showError(
       error instanceof TypeError
-        ? "Could not connect to Google Sheets. Check your connection and API settings."
+        ? "Could not connect to the lookup service. Please try again."
         : error.message
     );
   } finally {

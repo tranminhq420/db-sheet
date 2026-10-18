@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sheet-image-lookup",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-10-18",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "SHEETS_SPREADSHEET_ID": "1iXp8DSMCMPLNetwaKVFvJHewNphHkwI3CC654hEKgNM",
+    "SHEETS_WORKSHEET": "Trang tính1"
+  }
+}
